@@ -17,6 +17,7 @@ function start() {
 	]
 	var coverAllButtons = 0;
 	var whoWins = 2;
+	var check = 0;
 	tableCreate();
 	// Here we create the table and disable the start button
 	function tableCreate() {
@@ -38,73 +39,87 @@ function start() {
 		    }
 	    }
 	}
+
 	function pickCell(idCell) {
 		++coverAllButtons;
 		cell[idCell].setAttribute("disabled", "");
-		var check = 0;
+		if (ticTac == 1) {
+			playerX(idCell, check);
+		}else if (ticTac == 0) {
+			player0(idCell, check);
+		}	
+	}
+
+	function playerX(idCell, check) {
 		// In the first if condition we mark the clicked cell with "X" and check if X player
 		// wins or not
-		if (ticTac == 1) {
-			cell[idCell].innerHTML = "<span style='font-size:100px'>X</span>";
-			combinations_x.push(idCell);
-			// In this loops we check every line from winning combinations with the clicked 
-			// cells
-			for (var i = 0; combinations_x.length > 2 && i < winning_combinations.length; ++i) {
-				for (var j = 0; j < 3; ++j) {
-					for (var k = 0; k < combinations_x.length; ++k) {
-						if (winning_combinations[i][j] == combinations_x[k]) {
-							++check;
-						}
+		cell[idCell].innerHTML = "<span style='font-size:100px'>X</span>";
+		combinations_x.push(idCell);
+		// In this loops we check every line from winning combinations with the clicked 
+		// cells
+		for (var i = 0; combinations_x.length > 2 && i < winning_combinations.length; ++i) {
+			for (var j = 0; j < 3; ++j) {
+				for (var k = 0; k < combinations_x.length; ++k) {
+					if (winning_combinations[i][j] == combinations_x[k]) {
+						++check;
 					}
 				}
-				// If "X" wins reset game
-				if (check == 3) {
-					whoWins = 1;
-					resetGame();
-				}
-				check = 0;
 			}
-			ticTac = 0;
+			// If "X" wins reset game and display the winner
+			if (check == 3) {
+				whoWins = 1;
+				return winner();
+			}else if (check != 3 && coverAllButtons == 9) {
+				return tie();
+			}
+			check = 0;
+		}
+		info.innerHTML = "<span style='font-size:40px'>X's turn</span>";
+		ticTac = 0;
+	}
+
+	function player0(idCell, check) {
 		// In the second condition we mark the clicked cell with "0" and check if 0 player
 		// wins or not
-		}else if (ticTac == 0) {
-			cell[idCell].innerHTML = "<span style='font-size:100px'>0</span>";
-			combinations_0.push(idCell);
-			// In this loops we check every line from winning combinations with the clicked 
-			// cells
-			for (var i = 0; combinations_0.length > 2 && i < winning_combinations.length; ++i) {
-				for (var j = 0; j < 3; ++j) {
-					for (var k = 0; k < combinations_0.length; ++k) {
-						if (winning_combinations[i][j] == combinations_0[k]) {
-							++check;
-						}
+		cell[idCell].innerHTML = "<span style='font-size:100px'>0</span>";
+		combinations_0.push(idCell);
+		// In this loops we check every line from winning combinations with the clicked 
+		// cells
+		for (var i = 0; combinations_0.length > 2 && i < winning_combinations.length; ++i) {
+			for (var j = 0; j < 3; ++j) {
+				for (var k = 0; k < combinations_0.length; ++k) {
+					if (winning_combinations[i][j] == combinations_0[k]) {
+						++check;
 					}
 				}
-				// If "0" wins reset game
-				if (check == 3) {
-					whoWins = 0;
-					resetGame();			
-				}
-				check = 0;
 			}
-			ticTac = 1;
+			// If "0" wins reset game and display the winner
+			if (check == 3) {
+				whoWins = 0;
+				return winner();			
+			}else if (check != 3 && coverAllButtons == 9) {
+				return tie();
+			}
+			check = 0;
 		}
-		// We show display the information about player's turn and the winner, or TIE
-		// if no one win
-		if (ticTac == 0) {
-			info.innerHTML = "<span style='font-size:40px'>0's turn</span>";
-		}else {
-			info.innerHTML = "<span style='font-size:40px'>X's turn</span>";
-		}
-	    if (whoWins == 0) {
+		info.innerHTML = "<span style='font-size:40px'>0's turn</span>";
+		ticTac = 1;
+	}
+
+	function winner() {
+		if (whoWins == 0) {
 	    	info.innerHTML = "<span style='font-size:40px'>'0' wins!</span>";
 	    }else if (whoWins == 1) {
 	    	info.innerHTML = "<span style='font-size:40px'>'X' wins!</span>";
-	    }else if (coverAllButtons == 9) {
-	    	info.innerHTML = "<span style='font-size:40px'>No one wins, it is TIE!</span>";
-	    	resetGame();
 	    }
-    }
+	    resetGame();
+	}
+
+	function tie() {
+		info.innerHTML = "<span style='font-size:40px'>No one wins, it is TIE!</span>";
+		resetGame();
+	}
+		  
     function resetGame() {
     	for (var id = 1; id < 10; ++id) {
 			cell[id].setAttribute("disabled", "");
